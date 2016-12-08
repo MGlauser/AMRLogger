@@ -1,0 +1,55 @@
+Edited the python script because it wasn't working using #!/usr/bin/python.  make ! a space to comment out.
+
+Registers:
+1: Net value
+2: Peak demand in Watts
+3: The third ERT, ERT number 56464688 sends back the kWh Delivered.  
+   With this value you can determine how much energy is returned to the grid (kWh Received),
+     it is simply kWh Received = kWh Delivered - kWh Net.
+
+Is this right?
+Consumed = Produced + Net
+
+Keeping for future exploration:
+                # cmd = "/usr/bin/node ~/envoy/pvout.js --verbose --meter %i --timestamp %s > ~/envoy/pvout.log" % (last_meter - meter, timestamp)
+
+
+Logging cmd when using Sparkfun adaptor:
+cd ~/envoy
+clear && python amrlogger.py --port=/dev/ttyUSB0 -r -l -v
+   Or for POV-1
+clear && python amrlogger.py --port=/dev/ttyAMA0 -r -l -v
+
+
+Booting:
+/boot/cmdline.txt WAS:
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles
+
+IS:
+dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles
+
+
+Also did:
+sudo systemctl disable serial-getty@ttyAMA0.service
+
+For Real Time Clock on the POV-1:
+https://afterthoughtsoftware.com/products/rasclock
+  Actions taken:
+  edited /boot/config.txt
+    added:
+  dtoverlay=i2c-rtc,pcf2127
+
+  edit /lib/udev/hwclock-set
+    commented out the if with [ -e /run/systemd/system ] ...
+
+    commented out the two lines containing --systz
+
+RTC Commands:
+  # Writes system time to hwclock:
+  sudo hwclock -w
+
+  # Read rtc:
+  sudo hwclock -r
+
+  # copy time from rtc to system:
+  sudo hwclock -s
